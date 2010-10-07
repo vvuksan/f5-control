@@ -1,0 +1,60 @@
+This is a small PHP library that allows you to easily control F5 pool
+members.
+
+There are 3 scripts
+
+1. View Pool -> view_pool.php
+
+This is a "pretty" web view of the pool state. There is a drop-down menu
+that allows you to easily change the view
+
+2. List Pool State
+
+A plain text version that shows pool_state. It may be useful if you want
+to log the state of the pool before you do something. You can invoke it
+from the command line or from the web ie.
+
+list_pool_status.php --pool=Web-PROD
+
+or web
+
+wget -q -O - http://server/f5/list_pool_status&pool=Web-PROD
+
+3. Control Pool Member
+
+Most useful script :-). Control a pool member. You can invoke it via command
+line or from the web e.g.
+
+ php control_pool_member.php --pool=WEB-Prod --server=192.168.230.222 --port=80 --action=enable
+
+or
+
+ wget -q -O - http://bla/f5/control_pool_member.php?pool=WEB-Prod&server=192.168.230.222&port=80&action=enable
+
+ There is an optional argument force which you can use with disable ie. --force=1.
+ Trick is that if you disable a pool member clients that e.g. have a valid
+ session (per persistence profile) can still access the server. If you want
+ to boot those off you have to force offline the node. Alternatively you
+ may want to disable, wait for a while then force offline.
+ 
+ 
+Configuration
+=============
+
+You will need to create a file called config.php. In it you will at a
+minimum have to add your load balancers  and admin password e.g.
+
+<?php
+$loadbalancers = array("fw1", "fw2");
+
+$password = "supersecret";
+
+?>
+
+You can override any of the variables in config.default.php in config.php.
+
+There is also an option to cache things like active LB, list of pools in
+memcache to reduce some of the unnecessary traffic. You can enable it by
+setting
+
+$cache_results = 1;
